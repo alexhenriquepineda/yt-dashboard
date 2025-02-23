@@ -14,7 +14,7 @@ st.set_page_config(
 
 alt.themes.enable("dark")
 
-df = pd.read_csv("/Users/alexpineda/Documents/repos/yt-dashboard/data/bronze/video/video_data.csv", sep = ";")
+df = pd.read_csv("/data/bronze/video/video_data.csv", sep = ";")
 df['published_at'] = pd.to_datetime(df['published_at'], format='ISO8601')
 df["ano_mes_publish"] = df['published_at'].apply(lambda x: f"{x.year}-{x.month:02}")
 
