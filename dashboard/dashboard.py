@@ -20,16 +20,16 @@ df = pd.read_csv(path, sep = ";")
 df['published_at'] = pd.to_datetime(df['published_at'], format='ISO8601')
 df["ano_mes_publish"] = df['published_at'].apply(lambda x: f"{x.year}-{x.month:02}")
 
-with st.sidebar:
-    st.title('🏂 YouTube Dashboard')
-    st.write('This dashboard is a tool to analyze the YouTube data')
-    channel_list = ["Todos"] + list(df["channel_name"].unique())[::-1]
-    selected_channels = st.multiselect('Select channels', channel_list, default="Todos")
+#with st.sidebar:
+#    st.title('🏂 YouTube Dashboard')
+#    st.write('This dashboard is a tool to analyze the YouTube data')
+#    channel_list = ["Todos"] + list(df["channel_name"].unique())[::-1]
+#    selected_channels = st.multiselect('Select channels', channel_list, default="Todos")
 
-if "Todos" in selected_channels:
-    df = df
-else:
-    df = df[df["channel_name"].isin(selected_channels)]
+#if "Todos" in selected_channels:
+#    df = df
+#else:
+#    df = df[df["channel_name"].isin(selected_channels)]
 
 
 df_videos_longos = df[df['duration'] > 90]
