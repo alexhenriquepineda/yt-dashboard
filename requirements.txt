@@ -1,0 +1,5 @@
+pandas
+isodate
+streamlit
+altair
+plotly
