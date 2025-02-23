@@ -4,6 +4,7 @@ import altair as alt
 import datetime
 import numpy as np
 import plotly.express as px
+from pathlib import Path
 
 
 st.set_page_config(
@@ -14,7 +15,8 @@ st.set_page_config(
 
 alt.themes.enable("dark")
 
-df = pd.read_csv("/data/bronze/video/video_data.csv", sep = ";")
+path = Path(__file__).parents[1] / 'data/bronze/video/video_data.csv'
+df = pd.read_csv(path, sep = ";")
 df['published_at'] = pd.to_datetime(df['published_at'], format='ISO8601')
 df["ano_mes_publish"] = df['published_at'].apply(lambda x: f"{x.year}-{x.month:02}")
 
