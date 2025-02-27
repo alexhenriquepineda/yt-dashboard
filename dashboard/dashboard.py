@@ -6,8 +6,6 @@ import plotly.express as px
 from pathlib import Path
 import plotly.graph_objects as go
 
-
-
 st.set_page_config(
     page_title="YouTube Dashboard",
     page_icon="🏂",
@@ -45,6 +43,7 @@ df['comment_ratio'] = (df['comment_count'] / df['view_count'])
 df_videos_longos = df[df['duration'] > 90]
 df_videos_curtos = df[df['duration'] <= 90]
 st.title( 'OVERVIEW' )
+
 c1, c2 = st.columns( (1,1) )
 c1.header('Número de vídeos longos publicados')
 c2.header('Número de visualizações de vídeos longos')
@@ -102,7 +101,6 @@ c2.plotly_chart(fig, use_container_width=True)
 
 
 
-
 # Filter data for January 2024 and January 2025
 df_jan_2024 = df_videos_longos[(df_videos_longos['published_at'].dt.year == 2024) & (df_videos_longos['published_at'].dt.month == 1)]
 
@@ -113,119 +111,206 @@ st.markdown("""
 ### 📌 Indicadores de desempenho:
 Para analisar o desempenho dos canais no youtube, separamos quatro indicadores: 
 - 📊 **Número de Views, Comentários e Likes no mês.**
-- 📈 **Taxa de engajamento que corresponde ao => (Número delikes + número de comentários) / Total de visualizações no mes.**
+- 📈 **Taxa de engajamento que corresponde ao => (Número delikes + número de comentários) / Total de visualizações no mes.**       
 """)
 
-# Aggregate data for January 2024
-agg_jan_2024 = df_jan_2024.groupby('channel_name').agg(
-    total_views_2024=('view_count', 'sum'),
-    total_likes_2024=('like_count', 'sum'),
-    total_comments_2024=('comment_count', 'sum'),
-    avg_engagement_rate_2024=('engagement_rate', 'mean'),
-    avg_like_ratio_2024=('like_ratio', 'mean'),
-    avg_comment_ratio_2024=('comment_ratio', 'mean')
-).reset_index()
+st.markdown("<br>", unsafe_allow_html=True)
+
+st.markdown("""
+### VÍDEOS LONGOS
+""")
+# Lista de meses de 2024
+meses_2024 = range(1, 13)  # Janeiro a Dezembro
+
+for mes in meses_2024:
+    # Filtrando os dados para o mês de 2024
+    df_mes_2024 = df_videos_longos[(df_videos_longos['published_at'].dt.year == 2024) & (df_videos_longos['published_at'].dt.month == mes)]
+    
+    # Verificando se há dados para o mês de 2025
+    df_mes_2025 = df_videos_longos[(df_videos_longos['published_at'].dt.year == 2025) & (df_videos_longos['published_at'].dt.month == mes)]
+    
+    # Se houver dados para 2024
+    if not df_mes_2024.empty:
+        # Agregação dos dados de 2024
+        agg_mes_2024 = df_mes_2024.groupby('channel_name').agg(
+            total_views_2024=('view_count', 'sum'),
+            total_likes_2024=('like_count', 'sum'),
+            total_comments_2024=('comment_count', 'sum'),
+            avg_engagement_rate_2024=('engagement_rate', 'mean'),
+            avg_like_ratio_2024=('like_ratio', 'mean'),
+            avg_comment_ratio_2024=('comment_ratio', 'mean')
+        ).reset_index()
+
+    # Se houver dados para 2025
+    if not df_mes_2025.empty:
+        # Agregação dos dados de 2025
+        agg_mes_2025 = df_mes_2025.groupby('channel_name').agg(
+            total_views_2025=('view_count', 'sum'),
+            total_likes_2025=('like_count', 'sum'),
+            total_comments_2025=('comment_count', 'sum'),
+            avg_engagement_rate_2025=('engagement_rate', 'mean'),
+            avg_like_ratio_2025=('like_ratio', 'mean'),
+            avg_comment_ratio_2025=('comment_ratio', 'mean')
+        ).reset_index()
+
+        # Mesclar os dados de 2024 e 2025 pelos canais, preenchendo valores ausentes
+        agg_mes_comparativo = pd.merge(agg_mes_2024, agg_mes_2025, on='channel_name', how='outer')
+
+        # Criando o gráfico
+        fig = go.Figure()
+
+        # Gráfico de barras para número de views de 2024
+        fig.add_trace(go.Bar(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['total_views_2024'],
+            name=f'Views {mes} 2024',
+            marker_color='lightskyblue'
+        ))
+
+        # Gráfico de barras para número de views de 2025
+        fig.add_trace(go.Bar(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['total_views_2025'],
+            name=f'Views {mes} 2025',
+            marker_color='lightcoral'
+        ))
+
+        # Gráfico de linha para a taxa de engajamento de 2024
+        fig.add_trace(go.Scatter(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['avg_engagement_rate_2024'],
+            name=f'Engagement Rate {mes} 2024',
+            mode='lines+markers',
+            marker_color='darkorange',
+            yaxis='y2'
+        ))
+
+        # Gráfico de linha para a taxa de engajamento de 2025
+        fig.add_trace(go.Scatter(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['avg_engagement_rate_2025'],
+            name=f'Engagement Rate {mes} 2025',
+            mode='lines+markers',
+            marker_color='darkred',
+            yaxis='y2'
+        ))
+
+        # Atualizando o layout para incluir dois eixos y
+        fig.update_layout(
+            title=f"Número de views em vídeos longos por canal e taxa de engajamento em {pd.to_datetime(str(mes), format='%m').strftime('%B')} de 2024 e 2025",
+            xaxis=dict(title="Channel Name"),
+            yaxis=dict(
+                title="Number of Views",
+                side="left"
+            ),
+            yaxis2=dict(
+                title="Engagement Rate",
+                overlaying="y",
+                side="right",
+                tickformat=".%",
+            ),
+            legend=dict(x=0.01, y=0.95),
+            bargap=0.2
+        )
+        # Exibindo o gráfico (usando streamlit para exibição)
+        st.plotly_chart(fig, use_container_width=True)
 
 
-fig = go.Figure()
+st.markdown("<br>", unsafe_allow_html=True)
 
-# Add bar trace for number of views
-fig.add_trace(go.Bar(
-    x=agg_jan_2024['channel_name'],
-    y=agg_jan_2024['total_views_2024'],
-    name='Views',
-    marker_color='lightskyblue'
-))
+st.markdown("""
+### VÍDEOS CURTOS
+""")
 
-# Add line trace for engagement rate using a secondary y-axis
-fig.add_trace(go.Scatter(
-    x=agg_jan_2024['channel_name'],
-    y=agg_jan_2024['avg_engagement_rate_2024'],
-    name='Engagement Rate',
-    mode='lines+markers',
-    marker_color='darkorange',
-    yaxis='y2'
-))
+for mes in meses_2024:
+    # Filtrando os dados para o mês de 2024
+    df_mes_2024 = df_videos_curtos[(df_videos_curtos['published_at'].dt.year == 2024) & (df_videos_curtos['published_at'].dt.month == mes)]
+    
+    # Verificando se há dados para o mês de 2025
+    df_mes_2025 = df_videos_curtos[(df_videos_curtos['published_at'].dt.year == 2025) & (df_videos_curtos['published_at'].dt.month == mes)]
+    
+    # Se houver dados para 2024
+    if not df_mes_2024.empty:
+        # Agregação dos dados de 2024
+        agg_mes_2024 = df_mes_2024.groupby('channel_name').agg(
+            total_views_2024=('view_count', 'sum'),
+            total_likes_2024=('like_count', 'sum'),
+            total_comments_2024=('comment_count', 'sum'),
+            avg_engagement_rate_2024=('engagement_rate', 'mean'),
+            avg_like_ratio_2024=('like_ratio', 'mean'),
+            avg_comment_ratio_2024=('comment_ratio', 'mean')
+        ).reset_index()
 
-# Update layout for dual y-axes
-fig.update_layout(
-    title="Número de views por canal e taxa de engajamento em Janeiro 2024",
-    xaxis=dict(title="channel_name"),
-    yaxis=dict(
-        title="Number of Views",
-        side="left"
-    ),
-    yaxis2=dict(
-        title="Engagement Rate",
-        overlaying="y",
-        side="right",
-        tickformat=".%",
-    ),
-    legend=dict(x=0.01, y=0.95),
-    bargap=0.2
-)
-st.plotly_chart(fig, use_container_width=True)
+    # Se houver dados para 2025
+    if not df_mes_2025.empty:
+        # Agregação dos dados de 2025
+        agg_mes_2025 = df_mes_2025.groupby('channel_name').agg(
+            total_views_2025=('view_count', 'sum'),
+            total_likes_2025=('like_count', 'sum'),
+            total_comments_2025=('comment_count', 'sum'),
+            avg_engagement_rate_2025=('engagement_rate', 'mean'),
+            avg_like_ratio_2025=('like_ratio', 'mean'),
+            avg_comment_ratio_2025=('comment_ratio', 'mean')
+        ).reset_index()
 
-# Aggregate data for January 2025
-agg_jan_2025 = df_jan_2025.groupby('channel_name').agg(
-    total_views_2025=('view_count', 'sum'),
-    total_likes_2025=('like_count', 'sum'),
-    total_comments_2025=('comment_count', 'sum'),
-    avg_engagement_rate_2025=('engagement_rate', 'mean'),
-    avg_like_ratio_2025=('like_ratio', 'mean'),
-    avg_comment_ratio_2025=('comment_ratio', 'mean')
-).reset_index()
+        # Mesclar os dados de 2024 e 2025 pelos canais, preenchendo valores ausentes
+        agg_mes_comparativo = pd.merge(agg_mes_2024, agg_mes_2025, on='channel_name', how='outer')
 
-fig = go.Figure()
+        # Criando o gráfico
+        fig = go.Figure()
 
-# Add bar trace for number of views
-fig.add_trace(go.Bar(
-    x=agg_jan_2025['channel_name'],
-    y=agg_jan_2025['total_views_2025'],
-    name='Views',
-    marker_color='lightskyblue'
-))
+        # Gráfico de barras para número de views de 2024
+        fig.add_trace(go.Bar(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['total_views_2024'],
+            name=f'Views {mes} 2024',
+            marker_color='lightskyblue'
+        ))
 
-# Add line trace for engagement rate using a secondary y-axis
-fig.add_trace(go.Scatter(
-    x=agg_jan_2025['channel_name'],
-    y=agg_jan_2025['avg_engagement_rate_2025'],
-    name='Engagement Rate',
-    mode='lines+markers',
-    marker_color='darkorange',
-    yaxis='y2'
-))
+        # Gráfico de barras para número de views de 2025
+        fig.add_trace(go.Bar(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['total_views_2025'],
+            name=f'Views {mes} 2025',
+            marker_color='lightcoral'
+        ))
 
-# Update layout for dual y-axes
-fig.update_layout(
-    title="Número de views por canal e taxa de engajamento em Janeiro 2025",
-    xaxis=dict(title="channel_name"),
-    yaxis=dict(
-        title="Number of Views",
-        side="left"
-    ),
-    yaxis2=dict(
-        title="Engagement Rate",
-        overlaying="y",
-        side="right",
-        tickformat=".%",
-    ),
-    legend=dict(x=0.01, y=0.95),
-    bargap=0.2
-)
-st.plotly_chart(fig, use_container_width=True)
+        # Gráfico de linha para a taxa de engajamento de 2024
+        fig.add_trace(go.Scatter(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['avg_engagement_rate_2024'],
+            name=f'Engagement Rate {mes} 2024',
+            mode='lines+markers',
+            marker_color='darkorange',
+            yaxis='y2'
+        ))
 
-# Merge the dataframes
-comparison_df = pd.merge(agg_jan_2024, agg_jan_2025, on='channel_name', how='outer').fillna(0)
+        # Gráfico de linha para a taxa de engajamento de 2025
+        fig.add_trace(go.Scatter(
+            x=agg_mes_comparativo['channel_name'],
+            y=agg_mes_comparativo['avg_engagement_rate_2025'],
+            name=f'Engagement Rate {mes} 2025',
+            mode='lines+markers',
+            marker_color='darkred',
+            yaxis='y2'
+        ))
 
-# Calculate the differences
-comparison_df['view_diff'] = comparison_df['total_views_2025'] - comparison_df['total_views_2024']
-comparison_df['like_diff'] = comparison_df['total_likes_2025'] - comparison_df['total_likes_2024']
-comparison_df['comment_diff'] = comparison_df['total_comments_2025'] - comparison_df['total_comments_2024']
-
-st.title('Comparativo de Janeiro 2025 vs Janeiro 2024')
-
-st.write('Comparativo do número de visualizações, likes e comentários de Janeiro 2025 com Janeiro 2024 de todos os canais')
-
-st.dataframe(comparison_df[["channel_name", "total_views_2024", "total_views_2025", "view_diff"]], use_container_width=True)
-
+        # Atualizando o layout para incluir dois eixos y
+        fig.update_layout(
+            title=f"Número de views em vídeos longos por canal e taxa de engajamento em {pd.to_datetime(str(mes), format='%m').strftime('%B')} de 2024 e 2025",
+            xaxis=dict(title="Channel Name"),
+            yaxis=dict(
+                title="Number of Views",
+                side="left"
+            ),
+            yaxis2=dict(
+                title="Engagement Rate",
+                overlaying="y",
+                side="right",
+                tickformat=".%",
+            ),
+            legend=dict(x=0.01, y=0.95),
+            bargap=0.2
+        )
+        # Exibindo o gráfico (usando streamlit para exibição)
+        st.plotly_chart(fig, use_container_width=True)
