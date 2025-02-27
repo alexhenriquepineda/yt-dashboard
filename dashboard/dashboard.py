@@ -14,17 +14,19 @@ class YouTubeDashboard:
         self.df_videos_longos = self.df[self.df['duration'] > 90]
         self.df_videos_curtos = self.df[self.df['duration'] <= 90]
         self.setup_page()
+        
 
     def setup_page(self):
         st.set_page_config(
             page_title="YouTube Dashboard",
-            page_icon="🏂",
+            page_icon="📊",
             layout="wide",
             initial_sidebar_state="expanded"
         )
         alt.themes.enable("dark")
         self.show_overview()
         self.show_channel_analysis()
+        self.display_additional_info()
 
     def load_data(self):
         path = Path(__file__).parents[1] / 'data/bronze/video/video_data.csv'
@@ -112,6 +114,26 @@ class YouTubeDashboard:
                f'total_comments_{year}': ('comment_count', 'sum'),
                f'avg_engagement_rate_{year}': ('engagement_rate', 'mean')}
         ).reset_index()
+    
+    def display_additional_info(self):
+        st.title("📊 Curiosidades")
+        
+        canal_mais_videos = self.df['channel_name'].value_counts().idxmax()
+        total_videos = self.df['channel_name'].value_counts().max()
+        
+        titulo_primeiro_video = self.df.loc[self.df['published_at'].idxmin(), 'title']
+        canal_primeiro_video = self.df.loc[self.df['published_at'].idxmin(), 'channel_name']
+        
+        # Canal com maior média de vídeos por mês
+        media_videos_mes = self.df.groupby('channel_name').size() / self.df['ano_mes_publish'].nunique()
+        canal_mais_videos_mes = media_videos_mes.idxmax()
+        media_max_videos = media_videos_mes.max()
+        
+        st.markdown(f"**Canal com mais vídeos publicados:** {canal_mais_videos} ({total_videos} vídeos)")
+        st.markdown(f"**Canal que postou o primeiro vídeo:** {canal_primeiro_video} - {titulo_primeiro_video}")
+        st.markdown(f"**Canal com maior média de vídeos por mês:** {canal_mais_videos_mes} ({media_max_videos:.2f} vídeos/mês)")
+
+
 
 if __name__ == "__main__":
     YouTubeDashboard()
