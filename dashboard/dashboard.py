@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -43,7 +44,24 @@ df['comment_ratio'] = (df['comment_count'] / df['view_count'])
 df_videos_longos = df[df['duration'] > 90]
 df_videos_curtos = df[df['duration'] <= 90]
 st.title( 'OVERVIEW' )
+canal = st.text_input("Digite o nome de um canal que você gostaria de ver nessa análise:")
 
+if st.button("Salvar"):
+    if canal:
+        file_path = "canal.csv"
+
+        # Verifica se o arquivo já existe
+        file_exists = os.path.exists(file_path)
+
+        # Cria um DataFrame com a nova entrada
+        df = pd.DataFrame({"canal": [canal]})
+
+        # Salva no arquivo, adicionando apenas cabeçalho se for a primeira vez
+        df.to_csv(file_path, mode="a", header=not file_exists, index=False)
+
+        st.success("Canal salvo com sucesso!")
+    else:
+        st.warning("Por favor, digite um canal.")
 c1, c2 = st.columns( (1,1) )
 c1.header('Número de vídeos longos publicados')
 c2.header('Número de visualizações de vídeos longos')
