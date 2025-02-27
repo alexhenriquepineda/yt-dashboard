@@ -298,7 +298,7 @@ for mes in meses_2024:
 
         # Atualizando o layout para incluir dois eixos y
         fig.update_layout(
-            title=f"Número de views em vídeos longos por canal e taxa de engajamento em {pd.to_datetime(str(mes), format='%m').strftime('%B')} de 2024 e 2025",
+            title=f"Número de views em vídeos curtos por canal e taxa de engajamento em {pd.to_datetime(str(mes), format='%m').strftime('%B')} de 2024 e 2025",
             xaxis=dict(title="Channel Name"),
             yaxis=dict(
                 title="Number of Views",
