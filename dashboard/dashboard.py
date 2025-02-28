@@ -6,6 +6,40 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
+from sqlalchemy.exc import SQLAlchemyError
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+
+Base = declarative_base()
+
+
+class ChannelSugestion(Base):
+    __tablename__ = 'channel_suggestion'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    channel_name = Column(String(50))
+    dashboard = Column(String(50))
+
+
+def get_engine():
+    try:
+        engine = create_engine(DATABASE_URL)
+        return engine
+    except SQLAlchemyError as e:
+        st.error(f"Erro ao conectar ao banco de dados: {e}")
+        return None
+
+
+def create_table(engine):
+    try:
+        Base.metadata.create_all(engine)
+    except SQLAlchemyError as e:
+        st.error(f"Erro ao criar a tabela: {e}")
+
+
+
+
 
 class YouTubeDashboard:
     def __init__(self):
@@ -15,7 +49,6 @@ class YouTubeDashboard:
         self.df_videos_curtos = self.df[self.df['duration'] <= 90]
         self.setup_page()
         
-
     def setup_page(self):
         st.set_page_config(
             page_title="YouTube Dashboard",
@@ -27,6 +60,7 @@ class YouTubeDashboard:
         self.show_overview()
         self.show_channel_analysis()
         self.display_additional_info()
+        self.suggest_channel()
 
     def load_data(self):
         path = Path(__file__).parents[1] / 'data/bronze/video/video_data.csv'
@@ -132,6 +166,48 @@ class YouTubeDashboard:
         st.markdown(f"**Canal com mais vídeos publicados:** {canal_mais_videos} ({total_videos} vídeos)")
         st.markdown(f"**Canal que postou o primeiro vídeo:** {canal_primeiro_video} - {titulo_primeiro_video}")
         st.markdown(f"**Canal com maior média de vídeos por mês:** {canal_mais_videos_mes} ({media_max_videos:.2f} vídeos/mês)")
+
+    def suggest_channel(self):
+        st.title("📢 Sugira um Canal")
+        channel_suggestion = st.text_input("Digite o nome do canal que você gostaria de sugerir:")
+        if st.button("Enviar Sugestão"):
+            if channel_suggestion:
+                self.save_suggestion_to_db(channel_suggestion, dashboard="fitness")
+                st.success(f"Sugestão recebida! O canal '{channel_suggestion}' foi registrado.")
+            else:
+                st.warning("Por favor, insira o nome do canal antes de enviar.")
+    
+    def save_suggestion_to_db(self, channel_sugestion, dashboard):
+        load_dotenv()
+        DB_HOST = os.getenv("DB_HOST")
+        DB_DATABASE = os.getenv("DB_DATABASE")
+        DB_USER = os.getenv("DB_USER")
+        DB_PASSWORD = os.getenv("DB_PASSWORD")
+        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
+        
+        def save_data_postgres(session, dados):
+            try:
+                novo_dado = ChannelSugestion(
+                    channel_name=dados["channel_name"],
+                    dashboard=dados["dashboard"],
+                )
+                session.add(novo_dado)
+                session.commit()
+            except SQLAlchemyError as e:
+                st.error(f"Erro ao salvar os dados no banco de dados: {e}")
+                session.rollback()
+        try:
+            engine = create_engine(DATABASE_URL)
+            Session = sessionmaker(bind=engine)
+            session = Session()
+            suggestion = {
+                "channel_name": channel_sugestion, "dashboard": dashboard
+            }
+            save_data_postgres(session, suggestion)
+            session.close()
+        except Exception as e:
+            st.error(f"Erro ao salvar a sugestão no banco de dados: {e}")
+            session.rollback()
 
 
 
