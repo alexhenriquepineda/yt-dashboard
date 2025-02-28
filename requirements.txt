@@ -3,3 +3,6 @@ isodate
 streamlit
 altair
 plotly
+dotenv
+sqlalchemy
+psycopg2-binary
