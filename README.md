@@ -63,6 +63,7 @@ This project implements a complete data pipeline for YouTube data:
 ### Data Transformation:
 - Converts raw JSON into a well-structured DataFrame.
 - Calculates additional metrics such as video duration in seconds, engagement rate, like ratio, and comment ratio.
+-  Transform video and channel dataframe.
 
 ### Interactive Dashboard:
 - Provides overviews for long and short videos.
