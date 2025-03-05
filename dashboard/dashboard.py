@@ -1,4 +1,6 @@
 import os
+import boto3
+from io import BytesIO
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -43,7 +45,10 @@ def create_table(engine):
 
 class YouTubeDashboard:
     def __init__(self):
-        self.df = self.load_data()
+        self.s3_client = boto3.client("s3")
+        self.bucket_name = "yt-dashboard-datalake"
+        self.s3_key = "bronze/video/video_data.parquet"
+        self.df = self.read_parquet_from_s3()
         self.df = self.process_data(self.df)
         self.df_videos_longos = self.df[self.df['duration'] > 90]
         self.df_videos_curtos = self.df[self.df['duration'] <= 90]
@@ -62,9 +67,20 @@ class YouTubeDashboard:
         self.display_additional_info()
         self.suggest_channel()
 
-    def load_data(self):
-        path = Path(__file__).parents[1] / 'data/bronze/video/video_data.csv'
-        return pd.read_csv(path, sep=";")
+    def read_parquet_from_s3(self) -> pd.DataFrame:
+        try:
+            # Obtendo o arquivo do S3
+            response = self.s3_client.get_object(Bucket=self.bucket_name, Key=self.s3_key)
+            parquet_data = response['Body'].read()
+            
+            # Lendo o arquivo Parquet usando pandas
+            parquet_buffer = BytesIO(parquet_data)
+            df = pd.read_parquet(parquet_buffer, engine='pyarrow')
+            print(df.columns)
+            return df
+        except Exception as e:
+            print(f"Erro ao ler o arquivo Parquet do S3: {e}")
+            return pd.DataFrame()
 
     def process_data(self, df):
         df['published_at'] = pd.to_datetime(df['published_at'], format='ISO8601')
@@ -162,10 +178,21 @@ class YouTubeDashboard:
         media_videos_mes = self.df.groupby('channel_name').size() / self.df['ano_mes_publish'].nunique()
         canal_mais_videos_mes = media_videos_mes.idxmax()
         media_max_videos = media_videos_mes.max()
+
+        more_views = self.df.loc[self.df['view_count'].idxmax(), 'title']
+        channel_more_views = self.df.loc[self.df['view_count'].idxmax(), 'channel_name']
+        views = self.df.loc[self.df['view_count'].idxmax(), 'view_count']
+
+
+
         
         st.markdown(f"**Canal com mais vídeos publicados:** {canal_mais_videos} ({total_videos} vídeos)")
         st.markdown(f"**Canal que postou o primeiro vídeo:** {canal_primeiro_video} - {titulo_primeiro_video}")
         st.markdown(f"**Canal com maior média de vídeos por mês:** {canal_mais_videos_mes} ({media_max_videos:.2f} vídeos/mês)")
+        st.markdown(f"**O vídeo com maior número de visualizações:** {more_views} do canal {channel_more_views} com {views:,} visualizações")
+        st.markdown(f"**O vídeo longo com maior número de visualizações:** {self.df_videos_longos.loc[self.df_videos_longos['view_count'].idxmax(), 'title']} do canal {self.df_videos_longos.loc[self.df_videos_longos['view_count'].idxmax(), 'channel_name']} com {self.df_videos_longos.loc[self.df_videos_longos['view_count'].idxmax(), 'view_count']} visualizações")
+
+
 
     def suggest_channel(self):
         st.title("📢 Sugira um Canal")

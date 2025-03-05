@@ -1,11 +1,12 @@
 from config.api_key import API_KEY
 from config.channel_id import CHANNELS_IDS
+from config.aws import BUCKET_NAME, RAW_DATA
 from extract.channel.channel_extract import YouTubeDataChannelExtractor
 from extract.video.video_extract import YouTubeDataVideoExtractor
 
 if __name__ == '__main__':
-    channel_extractor = YouTubeDataChannelExtractor(API_KEY, CHANNELS_IDS)
-    channel_extractor.run()
+    #YouTubeDataChannelExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/channel/channel_data.json", "FITNESS")
+    
 
-    video_extractor = YouTubeDataVideoExtractor(API_KEY, CHANNELS_IDS)
-    video_extractor.execute_pipeline()
+    YouTubeDataVideoExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/video/video_data.json", "FITNESS")
+    

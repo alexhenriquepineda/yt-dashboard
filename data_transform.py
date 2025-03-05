@@ -1,12 +1,11 @@
-from config.path import RAW_DATA, BRONZE_DATA
+from config.aws import BRONZE_DATA, RAW_DATA, BUCKET_NAME
 from transform.channel.channel_transform import YouTubeChannelTransform
 from transform.video.video_transform import YouTubeVideoTransform
 
 if __name__ == '__main__':
 
-    yt_data = YouTubeChannelTransform(RAW_DATA + "/channel/channels_data.json")
-    yt_data.run(BRONZE_DATA + "/channel/channels_data.csv")
+    #YouTubeChannelTransform(BUCKET_NAME, RAW_DATA + "/channel/channel_data.json", BRONZE_DATA + "/channel/channel_data.parquet")
+    YouTubeVideoTransform(BUCKET_NAME, RAW_DATA + "/video/video_data.json", BRONZE_DATA + "/video/video_data.parquet")
+    
 
-    yt_video_transform = YouTubeVideoTransform(RAW_DATA + "/video/videos_data.json")
-    yt_video_transform.load_data()
-    yt_video_transform.save_to_csv(BRONZE_DATA + "/video/video_data.csv")
+

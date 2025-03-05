@@ -1,0 +1,5 @@
+BUCKET_NAME = "yt-dashboard-datalake"
+RAW_DATA = "raw"
+BRONZE_DATA = "bronze"
+SILVER_DATA = "silver"
+GOLD_DATA = "gold"

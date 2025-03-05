@@ -1,7 +1,9 @@
 import json
 import isodate
 import pandas as pd
+import boto3
 from typing import List, Dict, Any
+from io import BytesIO
 
 class Video:
     def __init__(self, data: Dict[str, Any]):
@@ -34,14 +36,19 @@ class Video:
 
 
 class YouTubeVideoTransform:
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+    def __init__(self, s3_bucket: str, raw_key: str, bronze_key: str):
+        self.s3_bucket = s3_bucket
+        self.raw_key = raw_key
         self.videos: List[Video] = []
+        self.s3_client = boto3.client('s3')
+        self.load_data()
+        self.save_to_s3(bronze_key)
 
     def load_data(self):
-        with open(self.file_path, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-            self.videos = [Video(video) for video in data]
+        # Baixar o arquivo do S3
+        obj = self.s3_client.get_object(Bucket=self.s3_bucket, Key=self.raw_key)
+        data = json.loads(obj['Body'].read().decode('utf-8'))
+        self.videos = [Video(video) for video in data]
 
     def to_dataframe(self) -> pd.DataFrame:
         df = pd.DataFrame([video.to_dict() for video in self.videos])
@@ -50,6 +57,13 @@ class YouTubeVideoTransform:
 
         return df
 
-    def save_to_csv(self, output_path: str):
+    def save_to_s3(self, output_key: str):
         df = self.to_dataframe()
-        df.to_csv(output_path, index=False, sep=';')
+        # Usando BytesIO para criar um buffer binário
+        parquet_buffer = BytesIO()
+        # Salvando o DataFrame como Parquet no buffer
+        df.to_parquet(parquet_buffer, index=False, engine='pyarrow')
+        parquet_buffer.seek(0)
+
+        # Enviar o arquivo Parquet para o S3
+        self.s3_client.put_object(Bucket=self.s3_bucket, Key=output_key, Body=parquet_buffer.getvalue())
