@@ -24,25 +24,6 @@ class ChannelSugestion(Base):
     dashboard = Column(String(50))
 
 
-def get_engine():
-    try:
-        engine = create_engine(DATABASE_URL)
-        return engine
-    except SQLAlchemyError as e:
-        st.error(f"Erro ao conectar ao banco de dados: {e}")
-        return None
-
-
-def create_table(engine):
-    try:
-        Base.metadata.create_all(engine)
-    except SQLAlchemyError as e:
-        st.error(f"Erro ao criar a tabela: {e}")
-
-
-
-
-
 class YouTubeDashboard:
     def __init__(self):
         self.s3_client = boto3.client("s3")
@@ -76,7 +57,6 @@ class YouTubeDashboard:
             # Lendo o arquivo Parquet usando pandas
             parquet_buffer = BytesIO(parquet_data)
             df = pd.read_parquet(parquet_buffer, engine='pyarrow')
-            print(df.columns)
             return df
         except Exception as e:
             print(f"Erro ao ler o arquivo Parquet do S3: {e}")
