@@ -33,10 +33,10 @@ This project implements a complete data pipeline for YouTube data:
 │   └── path.py             # Contains file paths configuration
 ├── dashboard
 │   └── dashboard.py        # Streamlit dashboard application
-├── data
+├── aws_s3
 │   └── bronze
 │       └── video
-│           └── video_data.csv  # Transformed video data in CSV format
+│           └── video_data.parquet  # Transformed video data in parquet format
 ├── data_extract.py         # Main script for data extraction using the YouTube Data API
 ├── data_transform.py       # Main script for transforming raw JSON data to CSV
 ├── extract
