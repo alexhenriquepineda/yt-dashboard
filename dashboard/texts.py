@@ -34,7 +34,7 @@ TITLE_VIDEO_MOST_COMMENTS = "Vídeo com mais comentários"
 TITLE_VIDEO_HIGHEST_ENGAGEMENT = "Vídeo com maior taxa de engajamento"
 
 # Textos para características de conteúdo
-TITLE_CONTENT_FEATURES = "📹 Características de Conteúdo"
+TITLE_CONTENT_FEATURES = "📹 Vídeos Longos"
 TITLE_LONGEST_VIDEO = "Vídeo mais longo"
 TITLE_LONG_VIDEO_MOST_VIEWS = "Vídeo longo com mais visualizações"
 
