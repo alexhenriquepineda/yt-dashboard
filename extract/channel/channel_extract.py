@@ -23,7 +23,6 @@ class YouTubeDataChannelExtractor:
         channel_ids: List[str], 
         bucket_name: str, 
         s3_key: str, 
-        dash_name: str,
         auto_execute: bool = True
     ):
         """
@@ -34,7 +33,6 @@ class YouTubeDataChannelExtractor:
             channel_ids: List of YouTube channel IDs to extract data for.
             bucket_name: AWS S3 bucket name.
             s3_key: Path where the file will be stored in S3.
-            dash_name: Dashboard name to be added to the data.
             auto_execute: If True, automatically executes extraction and upload.
         """
         # Logging configuration
@@ -45,7 +43,6 @@ class YouTubeDataChannelExtractor:
         self.channel_ids = channel_ids
         self.bucket_name = bucket_name
         self.s3_key = s3_key
-        self.dash_name = dash_name
         
         # Client initialization
         self.youtube = build(
@@ -71,7 +68,6 @@ class YouTubeDataChannelExtractor:
             List with processed channel data.
         """
         self.get_channels_data()
-        self.add_dashboard_column(self.dash_name)
         self.save_data_to_s3()
         return self.data
 
@@ -121,18 +117,6 @@ class YouTubeDataChannelExtractor:
         self.logger.info(f"Total of {len(self.data)} channels retrieved.")
         return self.data
 
-    def add_dashboard_column(self, dash_name: str) -> None:
-        """
-        Adds a 'dashboard' column with the specified value to all records.
-        
-        Args:
-            dash_name: Dashboard name to be added.
-        """
-        if not dash_name:
-            self.logger.warning("Dashboard name not provided. Using empty value.")
-            
-        for record in self.data:
-            record['dashboard'] = dash_name
 
     def save_data_to_s3(self) -> bool:
         """

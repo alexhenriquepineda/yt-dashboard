@@ -5,11 +5,8 @@ from extract.channel.channel_extract import YouTubeDataChannelExtractor
 from extract.video.video_extract import YouTubeDataVideoExtractor
 
 if __name__ == '__main__':
-    YouTubeDataChannelExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/channel/channel_data.json", "FITNESS")
+    YouTubeDataChannelExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/channel/channel_data.json")
     
-
     extractor = YouTubeDataVideoExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/video/video_data.json", "FITNESS")
-
-    stats = extractor.get_statistics()
-    print(stats)
+    print(extractor.get_statistics())
     

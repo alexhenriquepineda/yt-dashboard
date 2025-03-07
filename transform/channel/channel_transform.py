@@ -36,7 +36,6 @@ class YouTubeChannelTransform:
             'total_subscriber': int(channel.get('statistics', {}).get('subscriberCount', 0)),
             'total_video': int(channel.get('statistics', {}).get('videoCount', 0)),
             'playlist': channel.get('contentDetails', {}).get('relatedPlaylists', {}).get('uploads'),
-            'dashboard': channel.get('dashboard', '')
         }
     
     def _process_data(self) -> pd.DataFrame:

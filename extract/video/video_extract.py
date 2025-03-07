@@ -17,7 +17,6 @@ class YouTubeDataVideoExtractor:
         channel_ids: List[str], 
         bucket_name: str, 
         s3_key: str, 
-        dash_name: str,
         batch_size: int = 50,
         auto_execute: bool = True
     ):
@@ -29,7 +28,6 @@ class YouTubeDataVideoExtractor:
             channel_ids: List of YouTube channel IDs to process
             bucket_name: AWS S3 bucket name
             s3_key: Path within the S3 bucket to save the file (e.g., 'data/raw/video/videos_data.json')
-            dash_name: Dashboard name to tag all records with
             batch_size: Number of videos to process in each API batch request
             auto_execute: Whether to automatically execute the pipeline on initialization
         """
@@ -49,7 +47,6 @@ class YouTubeDataVideoExtractor:
         self.channel_ids = channel_ids
         self.bucket_name = bucket_name
         self.s3_key = s3_key
-        self.dash_name = dash_name
         self.batch_size = batch_size
         
         # YouTube API client setup
@@ -200,17 +197,6 @@ class YouTubeDataVideoExtractor:
             self.logger.error(f"YouTube API error fetching video details: {e}")
             return []
 
-    def _add_dashboard_tag(self, dash_name: str) -> None:
-        """
-        Add a dashboard tag to all video records.
-        
-        Args:
-            dash_name: Name of the dashboard to tag records with
-        """
-        self.logger.info(f"Adding dashboard tag '{dash_name}' to {len(self._video_details)} records")
-        
-        for record in self._video_details:
-            record['dashboard'] = dash_name
 
     def save_data_to_s3(self) -> bool:
         """
@@ -223,8 +209,6 @@ class YouTubeDataVideoExtractor:
             self.logger.warning("No video data to save")
             return False
 
-        # Add the dashboard tag
-        self._add_dashboard_tag(self.dash_name)
 
         # Convert the video details to JSON
         json_data = json.dumps(self._video_details, indent=2, ensure_ascii=False)
@@ -299,6 +283,5 @@ class YouTubeDataVideoExtractor:
             "channels_processed": len(self._channel_playlists),
             "total_videos_found": len(self._all_video_ids),
             "videos_with_details": len(self._video_details),
-            "dashboard_name": self.dash_name
         }
     
