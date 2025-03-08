@@ -2,7 +2,6 @@ import streamlit as st
 import sys
 from pathlib import Path
 
-# Adiciona o diretório pai ao path para poder importar os módulos personalizados
 sys.path.append(str(Path(__file__).parent.parent))
 from utils.dashboard_base import BaseDashboard
 
@@ -13,7 +12,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Estilo personalizado para a página de fitness
 st.markdown("""
 <style>
     .main-header {
@@ -46,16 +44,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Banner da página
 st.markdown('<div class="main-header">Dashboard dos canais de Finanças no YouTube</div>', unsafe_allow_html=True)
 
-# Adicionar uma imagem do banner (opcional)
-# st.image("assets/fitness_banner.jpg", use_column_width=True)
 
 st.markdown("""
 <div class="subheader">Análise de desempenho dos principais canais de fitness do YouTube</div>
 """, unsafe_allow_html=True)
 
-# Inicializa e executa o dashboard para o nicho de fitness
 fitness_dashboard = BaseDashboard(niche="Financas")
 fitness_dashboard.run_dashboard()
