@@ -12,7 +12,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
 from utils.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID
 from scipy.stats import f_oneway
-from dashboard.utils.texts import (
+from utils.texts import (
     PAGE_CONFIG, TITLE_OVERVIEW, TITLE_CHANNEL_ANALYSIS, DESC_CHANNEL_ANALYSIS,
     TITLE_CURIOSITIES, TITLE_WEEKDAY_CORRELATION, TITLE_SUGGEST_CHANNEL,
     METRIC_CHANNEL_VIDEOS, METRIC_CHANNEL_AVG, METRIC_FIRST_VIDEO_CHANNEL,
