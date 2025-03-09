@@ -46,10 +46,5 @@ st.markdown("""
 
 st.markdown('<div class="main-header">Dashboard dos canais de Finanças no YouTube</div>', unsafe_allow_html=True)
 
-
-st.markdown("""
-<div class="subheader">Análise de desempenho dos principais canais de fitness do YouTube</div>
-""", unsafe_allow_html=True)
-
 fitness_dashboard = BaseDashboard(niche="Financas")
 fitness_dashboard.run_dashboard()
