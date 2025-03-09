@@ -45,7 +45,7 @@ TEXT_LEAST_POPULAR_DAY = "Dia da semana menos popular para publicação"
 TEXT_AVG_TITLE_LENGTH = "Tamanho médio do título"
 
 # Textos para gráfico de correlação
-TITLE_CORRELATION_GRAPH = "📊 Gráfico de Correlação: Duração vs. Visualizações"
+TITLE_CORRELATION_GRAPH = "📊 Gráfico de Correlação: Duração do Vídeo vs. Visualizações"
 TEXT_CORRELATION = "Correlação entre duração e visualizações"
 
 # Textos para análise estatística do dia da semana
