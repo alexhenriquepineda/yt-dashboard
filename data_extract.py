@@ -7,6 +7,6 @@ from extract.video.video_extract import YouTubeDataVideoExtractor
 if __name__ == '__main__':
     YouTubeDataChannelExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/channel/channel_data.json")
     
-    extractor = YouTubeDataVideoExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/video/video_data.json")
+    extractor = YouTubeDataVideoExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/video/video_data.json", checkpoint_frequency=1000)
     print(extractor.get_statistics())
     

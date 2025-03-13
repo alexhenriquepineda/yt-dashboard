@@ -37,7 +37,7 @@ st.markdown("""
     background: linear-gradient(to right, #845EC2, #D65DB1);
     color: white;
 }
-.tech-card {
+.podcast-card {
     background: linear-gradient(to right, #00C9A7, #4D8076);
     color: white;
 }
@@ -88,6 +88,14 @@ with col1:
         "💪", 
         "Fitness",
         "fitness-card"
+    )
+
+    dashboard_card(
+        "Podcast", 
+        "Análise de canais de podcast e entretenimento",
+        "🎙️",
+        "Podcast",
+        "podcast-card"
     )
     
 with col2:

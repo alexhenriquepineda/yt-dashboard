@@ -11,7 +11,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
-from utils.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID
+from utils.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID
 from scipy.stats import f_oneway, pearsonr, spearmanr, ttest_ind
 from utils.texts import (
     PAGE_CONFIG, TITLE_OVERVIEW, TITLE_CHANNEL_ANALYSIS, DESC_CHANNEL_ANALYSIS,
@@ -54,16 +54,19 @@ class BaseDashboard:
         self.niche = niche
         self.s3_client = boto3.client("s3")
         self.bucket_name = "yt-dashboard-datalake"
-        self.s3_key = "bronze/video/video_data.parquet"
+        self.s3_key = "bronze/video/video_data_2.parquet"
         
         self.df = self.read_parquet_from_s3()
      
         self.df = self.filter_by_niche(self.df, niche)
         if not self.df.empty:
             self.df = self.process_data()
-
-            self.df_videos_longos = self.df[self.df['duration'] > 90]
-            self.df_videos_curtos = self.df[self.df['duration'] <= 90]
+            if niche == "Podcast":
+                self.df_videos_longos = self.df[self.df['duration'] > 3600]
+                self.df_videos_curtos = self.df[self.df['duration'] <= 3600]
+            else:
+                self.df_videos_longos = self.df[self.df['duration'] > 90]
+                self.df_videos_curtos = self.df[self.df['duration'] <= 90]
         else:
             st.error(f"Nenhum dado encontrado para o nicho '{niche}'.")
             self.df_videos_longos = pd.DataFrame()
@@ -82,10 +85,10 @@ class BaseDashboard:
         """
         if niche == "Fitness":
             return df[df['channel_id'].isin(FITNESS_CHANNELS_IDS)]
-        
         if niche == "Financas":
             return df[df['channel_id'].isin(FINANCAS_CHANNEL_ID)]
-        
+        if niche == "Podcast":
+            return df[df['channel_id'].isin(PODCAST_CHANNEL_ID)]
         else:
             return pd.DataFrame()
 
@@ -583,7 +586,7 @@ class BaseDashboard:
         selected_metrics = st.multiselect(
             "Selecione as métricas para visualizar a tendência temporal:",
             options=metric_options,
-            default=["num_videos", "media_views"],
+            default=["total_views", "num_videos"],
             format_func=lambda x: metric_dict[x]
         )
         

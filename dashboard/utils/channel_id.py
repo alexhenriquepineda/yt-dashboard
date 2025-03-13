@@ -30,7 +30,8 @@ FITNESS_CHANNELS_IDS = ["UCGfrC6R2PSMeXv4hdhONB6Q",
                 "UCWNp-LAUL3dQTOaADjTPAdg",
                 "UC4sQ3Xv9UiSEhkgdTNGK_rA",
                 "UC9cz05xObaFpB8U72t73IFA",
-                "UC3wVslvR1r5lKPeh7wpoG8Q"]
+                "UC3wVslvR1r5lKPeh7wpoG8Q",
+                "UCwf-NgPwT6kfljUyaujLAPw"]
 
 
 FINANCAS_CHANNEL_ID = ["UCT4nDeU5pv1XIGySbSK-GgA",
@@ -56,3 +57,27 @@ FINANCAS_CHANNEL_ID = ["UCT4nDeU5pv1XIGySbSK-GgA",
                        "UCnBNoed6NaPlpL8blj1yy8Q",
                        "UC6pkw1C4ha1cmU9aDJ8OxUw"
                        ]
+
+PODCAST_CHANNEL_ID = ["UCj9R9rOhl81fhnKxBpwJ-yw",
+                      "UC4ncvgh5hFr5O83MH7-jRJg",
+                      "UCWZoPPW7u2I4gZfhJBZ6NqQ",
+                      "UCfMA8s_QXPPcuOTjTDFb4vA",
+                      "UCzJPdSTGj7KPZLjaOatWS4A",
+                      "UCuUUWPHIioyfmctnDpwsFzw",
+                      "UC9djCiv4e85Kd8G--GWlcoQ",
+                      "UCxcDCeShqZWIUQuEo2iJSVA",
+                      "UC9LH3xFOJCCp2VFRcZjNdRQ",
+                      "UCDE-BCkjudUvQEMrm0XsHUg",
+                      "UC5-aueB1RqpUc-EeAjtx9Lw",
+                      "UCTBhsXf_XRxk8w4rMj6WBOA",
+                      "UCSICdgxW9BIvsHqmSLNU8hQ",
+                      "UCPHvx0NxJubMU8QqZ6X_Efw",
+                      "UCUZfhX79dQrJvAgYefiXCCA",
+                      "UCnlR7Byv1irGXGokMXf9nAQ",
+                      "UCW8w8qOEKr_f1N6fEF13vxQ",
+                      "UC6xhawZf2I30z9kAgqVEIvg",
+                      "UC3BM4LVGTrG5OER815AM7Bg",
+                      "UC6iiSl-DJQF5t_YttyUZX6Q",
+                      "UCbroBIg8zvIH8-F4631wJhA",
+                      "UCvm40-L5lbzlxQSbVnfX8pQ"
+                      ]
