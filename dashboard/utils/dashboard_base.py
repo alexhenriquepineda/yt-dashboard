@@ -1,5 +1,7 @@
 import os
+import re
 import boto3
+from collections import Counter
 from io import BytesIO
 import streamlit as st
 import pandas as pd
@@ -54,13 +56,12 @@ class BaseDashboard:
         self.niche = niche
         self.s3_client = boto3.client("s3")
         self.bucket_name = "yt-dashboard-datalake"
-        self.s3_key = "bronze/video/video_data_2.parquet"
+        self.s3_key = "silver/video/video_data.parquet"
         
         self.df = self.read_parquet_from_s3()
      
         self.df = self.filter_by_niche(self.df, niche)
         if not self.df.empty:
-            self.df = self.process_data()
             if niche == "Podcast":
                 self.df_videos_longos = self.df[self.df['duration'] > 3600]
                 self.df_videos_curtos = self.df[self.df['duration'] <= 3600]
@@ -106,42 +107,6 @@ class BaseDashboard:
             st.error(f"Erro ao ler o arquivo Parquet do S3: {e}")
             return pd.DataFrame()
 
-    def process_data(self):
-
-        if 'published_at' in self.df.columns:
-            #self.df['published_at'] = pd.to_datetime(self.df['published_at'])
-            
-            # Preparar colunas adicionais úteis para análise temporal
-            self.df['dia_semana'] = self.df['published_at'].dt.day_name()
-            self.df['hora_publicacao'] = self.df['published_at'].dt.hour
-            self.df['mes'] = self.df['published_at'].dt.month
-            self.df['ano'] = self.df['published_at'].dt.year
-            self.df['dia'] = self.df['published_at'].dt.day
-            
-            # Semana do ano para análise sazonal
-            self.df['semana_do_ano'] = self.df['published_at'].dt.isocalendar().week
-            
-            # Criar a mesma estrutura para os dataframes de vídeos longos e curtos
-            #self.df_videos_longos['published_at'] = pd.to_datetime(self.df_videos_longos['published_at'])
-            #self.df_videos_longos['dia_semana'] = self.df_videos_longos['published_at'].dt.day_name()
-            #self.df_videos_longos['hora_publicacao'] = self.df_videos_longos['published_at'].dt.hour
-            
-            #self.df_videos_curtos['published_at'] = pd.to_datetime(self.df_videos_curtos['published_at'])
-            #self.df_videos_curtos['dia_semana'] = self.df_videos_curtos['published_at'].dt.day_name()
-            #self.df_videos_curtos['hora_publicacao'] = self.df_videos_curtos['published_at'].dt.hour
-
-            self.df["ano_mes_publish"] = self.df['published_at'].apply(lambda x: f"{x.year}-{x.month:02}")
-            self.df['engagement_rate'] = np.where(
-                                            self.df['view_count'] > 0,
-                                            (self.df['like_count'] + self.df['comment_count']) / self.df['view_count'], np.nan
-                                                    ) * 100
-            self.df['like_ratio'] = (self.df['like_count'] / self.df['view_count']) * 100
-            self.df['comment_ratio'] = self.df['comment_count'] / self.df['view_count']
-
-            return self.df
-
-
-        
 
     def show_overview(self):
         st.title(TITLE_OVERVIEW)
@@ -675,7 +640,6 @@ class BaseDashboard:
             'max_engagement': self.df_videos_curtos['engagement_rate'].max(),
         }
         
-        # Visualização lado a lado com métricas
         col1, col2 = st.columns(2)
         
         with col1:
@@ -692,10 +656,8 @@ class BaseDashboard:
             st.metric("Média de Likes", f"{short_stats['avg_likes']:,.0f}")
             st.metric("Taxa de Engajamento Média", f"{short_stats['avg_engagement']:.2f}%")
         
-        # Gráfico de comparação
         st.subheader("Comparação de Métricas")
         
-        # Preparando dados para o gráfico
         metrics_to_compare = [
             'avg_views', 'avg_likes', 'avg_comments', 'avg_engagement'
         ]
@@ -715,19 +677,16 @@ class BaseDashboard:
         )
         
         if selected_metrics:
-            # Normalizando os dados para facilitar a comparação
             comparison_data = []
             
             for metric in selected_metrics:
                 if metric == 'avg_engagement':
-                    # Para taxa de engajamento, usamos o valor direto pois já é porcentagem
                     comparison_data.append({
                         'Métrica': metric_labels[metric],
                         'Vídeos Longos': long_stats[metric],
                         'Shorts': short_stats[metric]
                     })
                 else:
-                    # Calculando o percentual em relação aos vídeos longos
                     long_value = long_stats[metric]
                     short_value = short_stats[metric]
                     
@@ -739,7 +698,6 @@ class BaseDashboard:
             
             comparison_df = pd.DataFrame(comparison_data)
             
-            # Criando gráfico de barras lado a lado
             fig = px.bar(
                 comparison_df, 
                 x='Métrica', 
@@ -1031,9 +989,7 @@ class BaseDashboard:
             
             st.pyplot(plt)
             
-            # Adicional: buscar as 10 palavras mais comuns
-            from collections import Counter
-            import re
+
             
             # Função para extrair palavras das strings
             def extract_words(text):
@@ -1144,7 +1100,6 @@ class BaseDashboard:
         st.subheader("Impacto de Emojis nos Títulos")
         
         # Função para detectar emojis
-        import re
         def contains_emoji(text):
             emoji_pattern = re.compile(
                 "["

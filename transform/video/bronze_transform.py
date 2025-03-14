@@ -1,5 +1,4 @@
 import json
-import isodate
 import pandas as pd
 import boto3
 from typing import List, Dict, Any
@@ -35,7 +34,7 @@ class Video:
         }
 
 
-class YouTubeVideoTransform:
+class VideoTransformBronze:
     def __init__(self, s3_bucket: str, raw_key: str, bronze_key: str):
         self.s3_bucket = s3_bucket
         self.raw_key = raw_key
@@ -53,7 +52,6 @@ class YouTubeVideoTransform:
     def to_dataframe(self) -> pd.DataFrame:
         df = pd.DataFrame([video.to_dict() for video in self.videos])
         df['published_at'] = pd.to_datetime(df['published_at'], format='ISO8601')
-        df['duration'] = df['duration'].apply(lambda d: isodate.parse_duration(d).total_seconds() if pd.notna(d) else None)
 
         return df
 

@@ -5,8 +5,21 @@ from extract.channel.channel_extract import YouTubeDataChannelExtractor
 from extract.video.video_extract import YouTubeDataVideoExtractor
 
 if __name__ == '__main__':
-    YouTubeDataChannelExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/channel/channel_data.json")
+    channel_output_path = f"{RAW_DATA}/channel/channel_data.json"
+    YouTubeDataChannelExtractor(
+        API_KEY,
+        CHANNELS_IDS,
+        BUCKET_NAME,
+        channel_output_path
+    )
     
-    extractor = YouTubeDataVideoExtractor(API_KEY, CHANNELS_IDS, BUCKET_NAME, RAW_DATA + "/video/video_data.json", checkpoint_frequency=1000)
+    video_output_path = f"{RAW_DATA}/video/video_data.json"
+    extractor = YouTubeDataVideoExtractor(
+        API_KEY,
+        CHANNELS_IDS,
+        BUCKET_NAME,
+        video_output_path,
+        checkpoint_frequency=10000
+    )
     print(extractor.get_statistics())
     

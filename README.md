@@ -12,6 +12,7 @@ A robust data pipeline and interactive dashboard for harvesting, transforming, a
   - [Data Extraction](#data-extraction)
   - [Data Transformation](#data-transformation)
   - [Dashboard](#dashboard)
+  - [Automated Workflow](#automated-workflow)
 - [Configuration](#configuration)
 - [Contribution Guidelines](#contribution-guidelines)
 - [License](#license)
@@ -151,6 +152,29 @@ The dashboard provides:
 - Time-series visualizations for video counts and view metrics.
 - Detailed monthly comparisons of engagement metrics.
 - A form to suggest channels that integrates with a PostgreSQL database.
+
+### Automated Workflow
+
+This project includes a GitHub Actions workflow that automatically runs the data pipeline every day at 5am UTC:
+
+```bash
+# View the workflow configuration
+cat .github/workflows/data_pipeline.yml
+```
+
+The workflow:
+1. Extracts fresh data from the YouTube API
+2. Transforms the data through the bronze and silver layers
+3. Commits and pushes any changes back to the repository
+
+To set up the automated workflow:
+
+1. Add the following secrets to your GitHub repository:
+   - `YT_API_KEY`: Your YouTube Data API key
+   - `AWS_ACCESS_KEY_ID`: Your AWS access key
+   - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key
+
+2. The workflow will run automatically at 5am UTC daily, or you can manually trigger it from the "Actions" tab in your GitHub repository.
 
 ## Configuration
 
