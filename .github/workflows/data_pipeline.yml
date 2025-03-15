@@ -23,12 +23,12 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements_pipeline.txt
 
-      - name: Run data extraction
-        env:
-          YT_API_KEY: ${{ secrets.YT_API_KEY }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: python data_extract.py
+      #- name: Run data extraction
+      #  env:
+      #    YT_API_KEY: ${{ secrets.YT_API_KEY }}
+      #    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #  run: python data_extract.py
 
       - name: Run data transformation
         env:
