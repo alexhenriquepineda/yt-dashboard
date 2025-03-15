@@ -18,8 +18,7 @@ if __name__ == '__main__':
         YT_API_KEY,
         CHANNELS_IDS,
         BUCKET_NAME,
-        video_output_path,
-        checkpoint_frequency=10000
+        video_output_path
     )
     print(extractor.get_statistics())
     
