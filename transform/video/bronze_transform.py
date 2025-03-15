@@ -17,6 +17,9 @@ class Video:
         self.like_count = int(data.get('statistics', {}).get('likeCount', 0))
         self.comment_count = int(data.get('statistics', {}).get('commentCount', 0))
         self.thumbnail_url = data.get('snippet', {}).get('thumbnails', {}).get('high', {}).get('url')
+        self.extraction_date = data.get('extraction_date')
+
+
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -30,7 +33,8 @@ class Video:
             'view_count': self.view_count,
             'like_count': self.like_count,
             'comment_count': self.comment_count,
-            'thumbnail_url': self.thumbnail_url
+            'thumbnail_url': self.thumbnail_url,
+            'extraction_date': self.extraction_date
         }
 
 
