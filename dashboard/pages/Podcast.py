@@ -48,6 +48,7 @@ st.markdown("""
 
 
 st.markdown('<div class="main-header">Dashboard dos canais de Podcast e entreterimento no YouTube</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-subheader">**Para podcasts foram considerados vídeos longos acima de 1 hora e vídeos curtos abaixo de 1 hora!</div>', unsafe_allow_html=True)
 
 podcast_dashboard = BaseDashboard(niche="Podcast")
 podcast_dashboard.run_dashboard()
