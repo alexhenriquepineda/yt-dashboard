@@ -110,34 +110,105 @@ class BaseDashboard:
 
     def show_overview(self):
         st.title(TITLE_OVERVIEW)
-        self.show_video_metrics(self.df_videos_longos, 'Número de vídeos longos publicados', 'Número de visualizações de vídeos longos')
-        self.show_video_metrics(self.df_videos_curtos, 'Número de vídeos curtos publicados (<= 90 segundos)', 'Número de visualizações de vídeos curtos')
-
-    def show_video_metrics(self, df, title1, title2):
-        if df.empty:
-            st.warning(f"Não há dados disponíveis para {title1}")
-            return
-            
-        c1, c2 = st.columns((1, 1))
-        c1.header(title1)
-        c2.header(title2)
-        c1.metric('Total', df.shape[0])
-        c2.metric('Total', f"{df['view_count'].sum():,}".replace(",", "."))
-        self.plot_time_series(df, 'video_id', 'Quantidade de Vídeos', c1)
-        self.plot_time_series(df, 'view_count', 'Quantidade de Visualizações', c2)
-
-    def plot_time_series(self, df, column, ylabel, container):
-        if df.empty:
-            container.warning("Sem dados para exibir")
-            return
-            
-        aux = (
-            df[["ano_mes_publish", column]]
-            .groupby("ano_mes_publish").agg(qtd=(column, "count" if column == "video_id" else "sum"))
-            .reset_index()
+        
+        # Filtro de canais aplicado a todos os dados
+        channel_filter = st.multiselect(
+            "Filtrar por canal", 
+            options=self.df['channel_name'].unique().tolist(),
+            default=self.df['channel_name'].unique().tolist()
         )
-        fig = px.line(aux, x='ano_mes_publish', y='qtd', labels={'ano_mes_publish': 'Mês', 'qtd': ylabel})
-        container.plotly_chart(fig, use_container_width=True)
+        
+        # Aplicar filtro aos DataFrames
+        filtered_df_longos = self.df_videos_longos[self.df_videos_longos['channel_name'].isin(channel_filter)]
+        filtered_df_curtos = self.df_videos_curtos[self.df_videos_curtos['channel_name'].isin(channel_filter)]
+        
+        # Layout em colunas para vídeos longos
+        st.header("Métricas de Vídeos Longos")
+        c1, c2 = st.columns((1, 1))
+        
+        # Vídeos longos - coluna 1
+        c1.subheader("Número de vídeos longos publicados")
+        if filtered_df_longos.empty:
+            c1.warning("Não há dados disponíveis para vídeos longos")
+        else:
+            c1.metric('Total', filtered_df_longos.shape[0])
+            # Criar série temporal para quantidade de vídeos longos
+            aux_longos_count = (
+                filtered_df_longos[["ano_mes_publish", "video_id"]]
+                .groupby("ano_mes_publish").agg(qtd=("video_id", "count"))
+                .reset_index()
+            )
+            fig_longos_count = px.line(
+                aux_longos_count, 
+                x='ano_mes_publish', 
+                y='qtd', 
+                labels={'ano_mes_publish': 'Mês', 'qtd': 'Quantidade de Vídeos'}
+            )
+            c1.plotly_chart(fig_longos_count, use_container_width=True)
+        
+        # Vídeos longos - coluna 2
+        c2.subheader("Número de visualizações de vídeos longos")
+        if filtered_df_longos.empty:
+            c2.warning("Não há dados disponíveis para visualizações de vídeos longos")
+        else:
+            c2.metric('Total', f"{filtered_df_longos['view_count'].sum():,}".replace(",", "."))
+            # Criar série temporal para visualizações de vídeos longos
+            aux_longos_views = (
+                filtered_df_longos[["ano_mes_publish", "view_count"]]
+                .groupby("ano_mes_publish").agg(qtd=("view_count", "sum"))
+                .reset_index()
+            )
+            fig_longos_views = px.line(
+                aux_longos_views, 
+                x='ano_mes_publish', 
+                y='qtd', 
+                labels={'ano_mes_publish': 'Mês', 'qtd': 'Quantidade de Visualizações'}
+            )
+            c2.plotly_chart(fig_longos_views, use_container_width=True)
+        
+        # Layout em colunas para vídeos curtos
+        st.header("Métricas de Vídeos Curtos")
+        c3, c4 = st.columns((1, 1))
+        
+        # Vídeos curtos - coluna 1
+        c3.subheader("Número de vídeos curtos publicados")
+        if filtered_df_curtos.empty:
+            c3.warning("Não há dados disponíveis para vídeos curtos")
+        else:
+            c3.metric('Total', filtered_df_curtos.shape[0])
+            # Criar série temporal para quantidade de vídeos curtos
+            aux_curtos_count = (
+                filtered_df_curtos[["ano_mes_publish", "video_id"]]
+                .groupby("ano_mes_publish").agg(qtd=("video_id", "count"))
+                .reset_index()
+            )
+            fig_curtos_count = px.line(
+                aux_curtos_count, 
+                x='ano_mes_publish', 
+                y='qtd', 
+                labels={'ano_mes_publish': 'Mês', 'qtd': 'Quantidade de Vídeos'}
+            )
+            c3.plotly_chart(fig_curtos_count, use_container_width=True)
+        
+        # Vídeos curtos - coluna 2
+        c4.subheader("Número de visualizações de vídeos curtos")
+        if filtered_df_curtos.empty:
+            c4.warning("Não há dados disponíveis para visualizações de vídeos curtos")
+        else:
+            c4.metric('Total', f"{filtered_df_curtos['view_count'].sum():,}".replace(",", "."))
+            # Criar série temporal para visualizações de vídeos curtos
+            aux_curtos_views = (
+                filtered_df_curtos[["ano_mes_publish", "view_count"]]
+                .groupby("ano_mes_publish").agg(qtd=("view_count", "sum"))
+                .reset_index()
+            )
+            fig_curtos_views = px.line(
+                aux_curtos_views, 
+                x='ano_mes_publish', 
+                y='qtd', 
+                labels={'ano_mes_publish': 'Mês', 'qtd': 'Quantidade de Visualizações'}
+            )
+            c4.plotly_chart(fig_curtos_views, use_container_width=True)
 
     def show_channel_analysis(self):
         st.title(f'Análise Individual dos canais - {self.niche.capitalize()}')
