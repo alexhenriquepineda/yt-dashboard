@@ -1046,7 +1046,7 @@ class BaseDashboard:
         tab1, tab2, tab3, tab4 = st.tabs(["📊 Overview", "🔍 Análise por Canal", "💡 Curiosidades", "📈 Análise Estatística"])
         
         with tab1:
-            show_overview(self.df, self.df_videos_longos, self.df_videos_curtos)
+            self.df, self.df_videos_longos, self.df_videos_curtos = show_overview(self.df, self.df_videos_longos, self.df_videos_curtos)
             
         with tab2:
             show_channel_analysis(self.niche, self.df_videos_longos, self.df_videos_curtos)
