@@ -6,11 +6,11 @@ def show_overview(df, df_videos_longos, df_videos_curtos):
     st.title(TITLE_OVERVIEW)
     
     channel_filter = st.multiselect(
-        "Filtrar por canal", 
+        "A retirada ou adição de um canal nesse filtro, impactará em todas as páginas do dashboard.", 
         options=df['channel_name'].unique().tolist(),
         default=df['channel_name'].unique().tolist()
     )
-    
+    filtered_df = df[df['channel_name'].isin(channel_filter)]
     filtered_df_longos = df_videos_longos[df_videos_longos['channel_name'].isin(channel_filter)]
     filtered_df_curtos = df_videos_curtos[df_videos_curtos['channel_name'].isin(channel_filter)]
     
@@ -99,4 +99,6 @@ def show_overview(df, df_videos_longos, df_videos_curtos):
             labels={'ano_mes_publish': 'Mês', 'qtd': 'Quantidade de Visualizações'}
         )
         c4.plotly_chart(fig_curtos_views, use_container_width=True)
+
+    return filtered_df, filtered_df_longos, filtered_df_curtos
 
