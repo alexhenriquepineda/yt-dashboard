@@ -13,9 +13,9 @@ from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
-from utils.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID
+from utils.dashboard_code.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID
 from scipy.stats import f_oneway, pearsonr, spearmanr, ttest_ind
-from utils.texts import (
+from utils.dashboard_code.texts import (
     PAGE_CONFIG, TITLE_OVERVIEW, TITLE_CHANNEL_ANALYSIS, DESC_CHANNEL_ANALYSIS,
     TITLE_CURIOSITIES, TITLE_WEEKDAY_CORRELATION, TITLE_SUGGEST_CHANNEL,
     METRIC_CHANNEL_VIDEOS, METRIC_CHANNEL_AVG, METRIC_FIRST_VIDEO_CHANNEL,
@@ -27,6 +27,7 @@ from utils.texts import (
     TITLE_STATISTICAL_SUMMARY, TEXT_BEST_DAY, TEXT_WORST_DAY, TEXT_SIGNIFICANCE_ANALYSIS,
     INPUT_SUGGEST_CHANNEL, BTN_SEND_SUGGESTION, MSG_SUGGESTION_SUCCESS, MSG_SUGGESTION_EMPTY
 )
+from utils.dashboard_code.load_data import read_parquet_from_s3
 
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
@@ -58,7 +59,7 @@ class BaseDashboard:
         self.bucket_name = "yt-dashboard-datalake"
         self.s3_key = "silver/video/video_data.parquet"
         
-        self.df = self.read_parquet_from_s3()
+        self.df = read_parquet_from_s3(self.s3_client, self.bucket_name, self.s3_key)
      
         self.df = self.filter_by_niche(self.df, niche)
         if not self.df.empty:
@@ -91,20 +92,6 @@ class BaseDashboard:
         if niche == "Podcast":
             return df[df['channel_id'].isin(PODCAST_CHANNEL_ID)]
         else:
-            return pd.DataFrame()
-
-    def read_parquet_from_s3(self) -> pd.DataFrame:
-        try:
-            
-            response = self.s3_client.get_object(Bucket=self.bucket_name, Key=self.s3_key)
-            parquet_data = response['Body'].read()
-            
-            
-            parquet_buffer = BytesIO(parquet_data)
-            df = pd.read_parquet(parquet_buffer, engine='pyarrow')
-            return df
-        except Exception as e:
-            st.error(f"Erro ao ler o arquivo Parquet do S3: {e}")
             return pd.DataFrame()
 
 
