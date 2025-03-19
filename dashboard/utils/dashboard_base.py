@@ -30,6 +30,7 @@ from utils.dashboard_code.texts import (
 from utils.dashboard_code.load_data import read_parquet_from_s3
 from utils.dashboard_code.overview import show_overview
 from utils.dashboard_code.channel_analysis import show_channel_analysis
+from utils.dashboard_code.curiosity import display_additional_info
 
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
@@ -96,80 +97,6 @@ class BaseDashboard:
         else:
             return pd.DataFrame()
 
-    
-    def display_additional_info(self):
-        st.title(TITLE_CURIOSITIES)
-        
-        # Estatísticas básicas
-        canal_mais_videos = self.df['channel_name'].value_counts().idxmax()
-        total_videos = self.df['channel_name'].value_counts().max()
-        titulo_primeiro_video = self.df.loc[self.df['published_at'].idxmin(), 'title']
-        canal_primeiro_video = self.df.loc[self.df['published_at'].idxmin(), 'channel_name']
-        data_primeiro_video = self.df['published_at'].min().strftime('%d/%m/%Y')
-        media_videos_mes = self.df.groupby('channel_name').size() / self.df['ano_mes_publish'].nunique()
-        canal_mais_videos_mes = media_videos_mes.idxmax()
-        media_max_videos = media_videos_mes.max()
-        more_views = self.df.loc[self.df['view_count'].idxmax(), 'title']
-        channel_more_views = self.df.loc[self.df['view_count'].idxmax(), 'channel_name']
-        views = self.df.loc[self.df['view_count'].idxmax(), 'view_count']
-        long_video_title = self.df_videos_longos.loc[self.df_videos_longos['view_count'].idxmax(), 'title']
-        long_video_channel = self.df_videos_longos.loc[self.df_videos_longos['view_count'].idxmax(), 'channel_name']
-        long_video_views = self.df_videos_longos.loc[self.df_videos_longos['view_count'].idxmax(), 'view_count']
-        most_likes_title = self.df.loc[self.df['like_count'].idxmax(), 'title']
-        most_likes_channel = self.df.loc[self.df['like_count'].idxmax(), 'channel_name']
-        most_likes_count = self.df.loc[self.df['like_count'].idxmax(), 'like_count']
-        most_comments_title = self.df.loc[self.df['comment_count'].idxmax(), 'title']
-        most_comments_channel = self.df.loc[self.df['comment_count'].idxmax(), 'channel_name']
-        most_comments_count = self.df.loc[self.df['comment_count'].idxmax(), 'comment_count']
-        longest_video_title = self.df.loc[self.df['duration'].idxmax(), 'title']
-        longest_video_channel = self.df.loc[self.df['duration'].idxmax(), 'channel_name']
-        longest_duration = self.df.loc[self.df['duration'].idxmax(), 'duration']
-        hours, remainder = divmod(longest_duration, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        longest_duration_formatted = f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
-        highest_engagement_title = self.df.loc[self.df['engagement_rate'].idxmax(), 'title']
-        highest_engagement_channel = self.df.loc[self.df['engagement_rate'].idxmax(), 'channel_name']
-        highest_engagement_rate = self.df.loc[self.df['engagement_rate'].idxmax(), 'engagement_rate']
-        
-        st.subheader("📈 Estatísticas de Canais")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown(f"**{METRIC_CHANNEL_VIDEOS}:** {canal_mais_videos} ({total_videos} vídeos)")
-            st.markdown(f"**{METRIC_CHANNEL_AVG}:** {canal_mais_videos_mes} ({media_max_videos:.2f} vídeos/mês)")
-        with col2:
-            st.markdown(f"**{METRIC_FIRST_VIDEO_CHANNEL}:** {canal_primeiro_video} - {titulo_primeiro_video}")
-            st.markdown(f"**{METRIC_FIRST_VIDEO_DATE}:** {data_primeiro_video}")
-        
-        st.subheader(TITLE_VIDEOS_ENGAGEMENT)
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown(f"**{TITLE_VIDEO_MOST_VIEWS}:** {more_views}")
-            st.markdown(f"**Canal:** {channel_more_views}")
-            st.markdown(f"**Visualizações:** {views:,}")
-            st.markdown("---")
-            st.markdown(f"**{TITLE_VIDEO_MOST_LIKES}:** {most_likes_title}")
-            st.markdown(f"**Canal:** {most_likes_channel}")
-            st.markdown(f"**Likes:** {most_likes_count:,}")
-        with col2:
-            st.markdown(f"**{TITLE_VIDEO_MOST_COMMENTS}:** {most_comments_title}")
-            st.markdown(f"**Canal:** {most_comments_channel}")
-            st.markdown(f"**Comentários:** {most_comments_count:,}")
-            st.markdown("---")
-            st.markdown(f"**{TITLE_VIDEO_HIGHEST_ENGAGEMENT}:** {highest_engagement_title}")
-            st.markdown(f"**Canal:** {highest_engagement_channel}")
-            st.markdown(f"**Taxa de engajamento:** {highest_engagement_rate:.2f}%")
-        
-        st.subheader(TITLE_CONTENT_FEATURES)
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown(f"**{TITLE_LONGEST_VIDEO}:** {longest_video_title}")
-            st.markdown(f"**Canal:** {longest_video_channel}")
-            st.markdown(f"**Duração:** {longest_duration_formatted}")
-        with col2:
-            st.markdown(f"**{TITLE_LONG_VIDEO_MOST_VIEWS}:** {long_video_title}")
-            st.markdown(f"**Canal:** {long_video_channel}")
-            st.markdown(f"**Visualizações:** {long_video_views:,}")
 
     def display_statiscal_analysis(self):
         st.subheader(TITLE_CURIOUS_PATTERNS)
@@ -1125,7 +1052,7 @@ class BaseDashboard:
             show_channel_analysis(self.niche, self.df_videos_longos, self.df_videos_curtos)
             
         with tab3:
-            self.display_additional_info()
+            display_additional_info(self.df, self.df_videos_longos)
 
         with tab4:
             self.display_statiscal_analysis()
