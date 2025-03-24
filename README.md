@@ -62,7 +62,7 @@ This project implements a complete data pipeline for YouTube data:
 - Harvests YouTube channel uploads and video details with error handling for API interactions.
 
 ### Data Transformation:
-- Converts raw JSON into a well-structured DataFrame.
+- Converts raw JSON into a well-structured DataFrame into silver layer.
 - Calculates additional metrics such as video duration in seconds, engagement rate, like ratio, and comment ratio.
 -  Transform video and channel dataframe.
 
