@@ -1,35 +1,17 @@
-import os
 import boto3
 import streamlit as st
 import pandas as pd
-from sqlalchemy.exc import SQLAlchemyError
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.orm import declarative_base, sessionmaker
-from utils.dashboard_code.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID
-from utils.dashboard_code.texts import (
-     TITLE_SUGGEST_CHANNEL, INPUT_SUGGEST_CHANNEL, BTN_SEND_SUGGESTION, MSG_SUGGESTION_SUCCESS, MSG_SUGGESTION_EMPTY
-)
-from utils.dashboard_code.load_data import read_parquet_from_s3
 from utils.dashboard_code.overview import show_overview
-from utils.dashboard_code.channel_analysis import show_channel_analysis
+from utils.dashboard_code.suggestions import suggest_channel
+from utils.dashboard_code.load_data import read_parquet_from_s3
 from utils.dashboard_code.curiosity import display_additional_info
+from utils.dashboard_code.channel_analysis import show_channel_analysis
 from utils.dashboard_code.video_duration import display_statiscal_analysis
+from utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
+from utils.dashboard_code.title_performance import analyze_title_performance
 from utils.dashboard_code.weekday_correlation import analyze_weekday_correlation
 from utils.dashboard_code.comparative_analysis import analyze_comparative_performance
-from utils.dashboard_code.title_performance import analyze_title_performance
-from utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
-
-
-
-Base = declarative_base()
-
-
-class ChannelSugestion(Base):
-    __tablename__ = 'channel_suggestion'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    channel_name = Column(String(50))
-    dashboard = Column(String(50))
+from utils.dashboard_code.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID
 
 
 class BaseDashboard:
@@ -48,6 +30,8 @@ class BaseDashboard:
         self.s3_client = boto3.client("s3")
         self.bucket_name = "yt-dashboard-datalake"
         self.s3_key = "silver/video/video_data.parquet"
+        # Chave para o arquivo de sugestões
+        self.s3_key_suggestions = "silver/suggestion/suggestions.parquet"
         
         self.df = read_parquet_from_s3(self.s3_client, self.bucket_name, self.s3_key)
      
@@ -84,48 +68,6 @@ class BaseDashboard:
         else:
             return pd.DataFrame()
 
-    def suggest_channel(self):
-        st.title(TITLE_SUGGEST_CHANNEL)
-        channel_suggestion = st.text_input(INPUT_SUGGEST_CHANNEL)
-        if st.button(BTN_SEND_SUGGESTION):
-            if channel_suggestion:
-                self.save_suggestion_to_db(channel_suggestion, dashboard="fitness")
-                st.success(MSG_SUGGESTION_SUCCESS.format(channel_suggestion))
-            else:
-                st.warning(MSG_SUGGESTION_EMPTY)
-    
-    def save_suggestion_to_db(self, channel_sugestion, dashboard):
-        load_dotenv()
-        DB_HOST = os.getenv("DB_HOST")
-        DB_DATABASE = os.getenv("DB_DATABASE")
-        DB_USER = os.getenv("DB_USER")
-        DB_PASSWORD = os.getenv("DB_PASSWORD")
-        DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}"
-        
-        def save_data_postgres(session, dados):
-            try:
-                novo_dado = ChannelSugestion(
-                    channel_name=dados["channel_name"],
-                    dashboard=dados["dashboard"],
-                )
-                session.add(novo_dado)
-                session.commit()
-            except SQLAlchemyError as e:
-                st.error(f"Erro ao salvar os dados no banco de dados: {e}")
-                session.rollback()
-        try:
-            engine = create_engine(DATABASE_URL)
-            Session = sessionmaker(bind=engine)
-            session = Session()
-            suggestion = {
-                "channel_name": channel_sugestion, "dashboard": dashboard
-            }
-            save_data_postgres(session, suggestion)
-            session.close()
-        except Exception as e:
-            st.error(f"Erro ao salvar a sugestão no banco de dados: {e}")
-
-
 
     def run_dashboard(self):
         """Executa o dashboard completo"""
@@ -159,9 +101,7 @@ class BaseDashboard:
             analyze_sazonalidade(self.df)
             analyze_comparative_performance(self.df_videos_longos, self.df_videos_curtos)
             analyze_title_performance(self.df)
-
-        
             
         # Seção de sugestão de canais
         st.markdown("---")
-        self.suggest_channel()
+        suggest_channel(self.s3_client, self.niche, self.bucket_name, self.s3_key_suggestions)
