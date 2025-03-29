@@ -11,7 +11,7 @@ from utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
 from utils.dashboard_code.title_performance import analyze_title_performance
 from utils.dashboard_code.weekday_correlation import analyze_weekday_correlation
 from utils.dashboard_code.comparative_analysis import analyze_comparative_performance
-from utils.dashboard_code.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID
+from utils.dashboard_code.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID, VIAGENS_CHANNEL_ID
 
 
 class BaseDashboard:
@@ -65,6 +65,8 @@ class BaseDashboard:
             return df[df['channel_id'].isin(FINANCAS_CHANNEL_ID)]
         if niche == "Podcast":
             return df[df['channel_id'].isin(PODCAST_CHANNEL_ID)]
+        if niche == "Viagens":
+            return df[df['channel_id'].isin(VIAGENS_CHANNEL_ID)]
         else:
             return pd.DataFrame()
 

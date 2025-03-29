@@ -82,7 +82,7 @@ PODCAST_CHANNEL_ID = ["UCj9R9rOhl81fhnKxBpwJ-yw",
                       "UCvm40-L5lbzlxQSbVnfX8pQ"
                       ]
 
-TRAVEL_CHANNEL = ["UCLPXpKv6WDc7mtapsbMyPHg",
+VIAGENS_CHANNEL_ID = ["UCLPXpKv6WDc7mtapsbMyPHg",
                   "UCOHptmhkQl0nPAPpghvJjRA",
                   "UC5sMjGaQJXkQdZTzGkSjYDg",
                   "UCWfRNn9fRe5gMc3QaE3AXkA",
