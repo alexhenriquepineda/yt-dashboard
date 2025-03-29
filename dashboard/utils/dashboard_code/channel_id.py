@@ -81,3 +81,27 @@ PODCAST_CHANNEL_ID = ["UCj9R9rOhl81fhnKxBpwJ-yw",
                       "UCbroBIg8zvIH8-F4631wJhA",
                       "UCvm40-L5lbzlxQSbVnfX8pQ"
                       ]
+
+TRAVEL_CHANNEL = ["UCLPXpKv6WDc7mtapsbMyPHg",
+                  "UCOHptmhkQl0nPAPpghvJjRA",
+                  "UC5sMjGaQJXkQdZTzGkSjYDg",
+                  "UCWfRNn9fRe5gMc3QaE3AXkA",
+                  "UC-6_6nA-v9W057U5sX3tTXg",
+                  "UCOJNw9aHGRkYuIOqwU7yK-Q",
+                  "UCk6RUGsfWI-3kPrDlMUfvfQ",
+                  "UC6xoasG-FY3P1YHo8_gBG9g",
+                  "UCULwpDVKV_vOZQ4zRyoYgUA",
+                  "UCJy-lSzu5UzVvLn9nXvWovg",
+                  "UChT_BMoR8j1JakGNMCQOAkw",
+                  "UC2HcaGYdio1RRuu3lh9_mHA",
+                  "UC3W3fZG5oGQGGNoBYWwCrTg",
+                  "UCGQJv1EsV4kcVkZJ4FoeWdA",
+                  "UCbVz3Ux2FXbPgrDbOanPLlg",
+                  "UCNU8ZfLKcoJXRspbizt1Ycw",
+                  "UC3UnmT5IgPKdXkvPhdbulaQ",
+                  "UCV6Lb37EQLdaDu0VyI7yDPg",
+                  "UCngY-0fPeVYo-TdIBmj-hGg",
+                  "UCnqaJ5tlyhfQiaQR1id_DBA",
+                  "UCd76luTPgzdZ5FUDk74RK9w"
+                             
+                             ]
