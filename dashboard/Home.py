@@ -33,7 +33,7 @@ st.markdown("""
     background: linear-gradient(to right, #FFC75F, #F9F871);
     color: #333;
 }
-.gaming-card {
+.travel-card {
     background: linear-gradient(to right, #845EC2, #D65DB1);
     color: white;
 }
@@ -103,8 +103,16 @@ with col2:
         "Finanças", 
         "Análise de canais de finanças, investimentos e criptomoedas",
         "💰", 
-        "Financas",  # Corrigido de "Creator" para "financas"
+        "Financas", 
         "financas-card"
+    )
+
+    dashboard_card(
+        "Viagens", 
+        "Análise de canais de viagens e lifestyle",
+        "🌍", 
+        "Viagens",  
+        "travel-card"
     )    
 
 
