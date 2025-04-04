@@ -55,7 +55,15 @@ FINANCAS_CHANNEL_ID = ["UCT4nDeU5pv1XIGySbSK-GgA",
                        "UCfMA8s_QXPPcuOTjTDFb4vA",
                        "UCzJPdSTGj7KPZLjaOatWS4A",
                        "UCnBNoed6NaPlpL8blj1yy8Q",
-                       "UC6pkw1C4ha1cmU9aDJ8OxUw"
+                       "UC6pkw1C4ha1cmU9aDJ8OxUw",
+                       "UCj3jEZuLmXOndQJFkPTp3Nw",
+                       "UCIjDZzIWu0wlkDbBImhCS7Q",
+                       "UCiHUp5cRkjcItPdldyJgd4Q",
+                       "UCU_UT4dJbSSPfTK52Yz9Agw",
+                       "UC7BsIosUdCz1utgm1Df1y_A",
+                       "UCteJrv6W7MWB5SoRvfjF36Q",
+                       "UCSXdP8V4jRaw-8YMTpa6glw",
+                       "UCLJkh3QjHsLtK0LZFd28oGg"
                        ]
 
 PODCAST_CHANNEL_ID = ["UCj9R9rOhl81fhnKxBpwJ-yw",
