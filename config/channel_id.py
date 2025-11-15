@@ -100,6 +100,7 @@ CHANNELS_IDS = [
 "UC7BsIosUdCz1utgm1Df1y_A",
 "UCteJrv6W7MWB5SoRvfjF36Q",
 "UCSXdP8V4jRaw-8YMTpa6glw",
-"UCLJkh3QjHsLtK0LZFd28oGg"
+"UCLJkh3QjHsLtK0LZFd28oGg",
+"UCeL1a4rpEA8UG9IQIewPccg"
  ]
                 
