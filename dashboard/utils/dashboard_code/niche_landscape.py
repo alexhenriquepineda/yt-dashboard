@@ -260,7 +260,16 @@ def show_niche_landscape(niche: str, df: pd.DataFrame) -> None:
         options=available_months,
         index=default_index,
     )
-    top_n = st.slider("Quantidade de canais no ranking", min_value=5, max_value=1000, value=30, step=1)
+    available_channels_for_month = ranking_df[ranking_df["ano_mes_publish"] == selected_month]["channel_id"].nunique()
+    slider_min = 5 if available_channels_for_month >= 5 else 1
+    slider_default = min(30, available_channels_for_month)
+    top_n = st.slider(
+        "Quantidade de canais no ranking",
+        min_value=slider_min,
+        max_value=available_channels_for_month,
+        value=slider_default,
+        step=1,
+    )
 
     month_df = df[df["ano_mes_publish"] == selected_month].copy()
     month_ranking = ranking_df[ranking_df["ano_mes_publish"] == selected_month].head(top_n).copy()
