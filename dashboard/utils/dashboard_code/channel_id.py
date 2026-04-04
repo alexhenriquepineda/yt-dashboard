@@ -31,7 +31,9 @@ FITNESS_CHANNELS_IDS = ["UCGfrC6R2PSMeXv4hdhONB6Q",
                 "UC4sQ3Xv9UiSEhkgdTNGK_rA",
                 "UC9cz05xObaFpB8U72t73IFA",
                 "UC3wVslvR1r5lKPeh7wpoG8Q",
-                "UCwf-NgPwT6kfljUyaujLAPw"]
+                "UCwf-NgPwT6kfljUyaujLAPw",
+                "UC8XVVspM8VIBh_DCeul0Qcg",
+                "UCqQWafqJqrCyxOFPrSlxL_w"]
 
 
 FINANCAS_CHANNEL_ID = ["UCT4nDeU5pv1XIGySbSK-GgA",
