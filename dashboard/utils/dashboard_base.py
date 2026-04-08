@@ -1,19 +1,19 @@
 import boto3
 import streamlit as st
 import pandas as pd
-from utils.dashboard_code.overview import show_overview
-from utils.dashboard_code.suggestions import suggest_channel
-from utils.dashboard_code.load_data import read_parquet_from_s3
-from utils.dashboard_code.curiosity import display_additional_info
-from utils.dashboard_code.channel_analysis import show_channel_analysis
-from utils.dashboard_code.video_duration import display_statiscal_analysis
-from utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
-from utils.dashboard_code.title_performance import analyze_title_performance
-from utils.dashboard_code.weekday_correlation import analyze_weekday_correlation
-from utils.dashboard_code.comparative_analysis import analyze_comparative_performance
-from utils.dashboard_code.niche_landscape import show_niche_landscape
-from utils.dashboard_code.channel_forecast import show_channel_forecast
-from utils.dashboard_code.channel_id import FITNESS_CHANNELS_IDS, FINANCAS_CHANNEL_ID, PODCAST_CHANNEL_ID, VIAGENS_CHANNEL_ID
+from dashboard.utils.dashboard_code.overview import show_overview
+from dashboard.utils.dashboard_code.suggestions import suggest_channel
+from dashboard.utils.dashboard_code.load_data import read_parquet_from_s3
+from dashboard.utils.dashboard_code.curiosity import display_additional_info
+from dashboard.utils.dashboard_code.channel_analysis import show_channel_analysis
+from dashboard.utils.dashboard_code.video_duration import display_statiscal_analysis
+from dashboard.utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
+from dashboard.utils.dashboard_code.title_performance import analyze_title_performance
+from dashboard.utils.dashboard_code.weekday_correlation import analyze_weekday_correlation
+from dashboard.utils.dashboard_code.comparative_analysis import analyze_comparative_performance
+from dashboard.utils.dashboard_code.niche_landscape import show_niche_landscape
+from dashboard.utils.dashboard_code.channel_forecast import show_channel_forecast
+from config.channel_id import get_channel_ids_by_niche
 
 
 class BaseDashboard:
@@ -35,22 +35,24 @@ class BaseDashboard:
         # Chave para o arquivo de sugestões
         self.s3_key_suggestions = "silver/suggestion/suggestions.parquet"
         
-        self.df = read_parquet_from_s3(self.s3_client, self.bucket_name, self.s3_key)
+        self.df, self.df_videos_longos, self.df_videos_curtos = self._load_and_filter_data()
      
-        self.df = self.filter_by_niche(self.df, niche)
-        if not self.df.empty:
-            if "duration_seconds" in self.df.columns:
-                self.df["duration"] = self.df["duration_seconds"]
-            if niche == "Podcast":
-                self.df_videos_longos = self.df[self.df['duration'] > 3600]
-                self.df_videos_curtos = self.df[self.df['duration'] <= 3600]
+    @st.cache_data(ttl=3600)
+    def _load_and_filter_data(_self):
+        df = read_parquet_from_s3(_self.s3_client, _self.bucket_name, _self.s3_key)
+        df = _self.filter_by_niche(df, _self.niche)
+        df_videos_longos = pd.DataFrame()
+        df_videos_curtos = pd.DataFrame()
+        if not df.empty:
+            if "duration_seconds" in df.columns:
+                df["duration"] = df["duration_seconds"]
+            if _self.niche == "Podcast":
+                df_videos_longos = df[df['duration'] > 3600]
+                df_videos_curtos = df[df['duration'] <= 3600]
             else:
-                self.df_videos_longos = self.df[self.df['duration'] > 90]
-                self.df_videos_curtos = self.df[self.df['duration'] <= 90]
-        else:
-            st.error(f"Nenhum dado encontrado para o nicho '{niche}'.")
-            self.df_videos_longos = pd.DataFrame()
-            self.df_videos_curtos = pd.DataFrame()
+                df_videos_longos = df[df['duration'] > 90]
+                df_videos_curtos = df[df['duration'] <= 90]
+        return df, df_videos_longos, df_videos_curtos
     
     def filter_by_niche(self, df, niche):
         """
@@ -63,16 +65,11 @@ class BaseDashboard:
         Returns:
             pd.DataFrame: DataFrame filtrado
         """
-        if niche == "Fitness":
-            return df[df['channel_id'].isin(FITNESS_CHANNELS_IDS)]
-        if niche == "Financas":
-            return df[df['channel_id'].isin(FINANCAS_CHANNEL_ID)]
-        if niche == "Podcast":
-            return df[df['channel_id'].isin(PODCAST_CHANNEL_ID)]
-        if niche == "Viagens":
-            return df[df['channel_id'].isin(VIAGENS_CHANNEL_ID)]
-        else:
+        channel_ids = get_channel_ids_by_niche(niche)
+        if not channel_ids:
             return pd.DataFrame()
+
+        return df[df['channel_id'].isin(channel_ids)]
 
 
     def run_dashboard(self):

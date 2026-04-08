@@ -3,9 +3,11 @@ from io import BytesIO
 import logging
 from botocore.exceptions import ClientError, NoCredentialsError
 from typing import Optional, Union, Dict, Any
+import streamlit as st
 
+@st.cache_data(ttl=3600)  # Cache por 1 hora
 def read_parquet_from_s3(
-    s3_client, 
+    _s3_client,
     bucket_name: str, 
     s3_key: str,
     logger: Optional[logging.Logger] = None,
@@ -60,7 +62,7 @@ def read_parquet_from_s3(
             raise ValueError("s3_key must be a non-empty string")
         
         # Get object from S3
-        response = s3_client.get_object(Bucket=bucket_name, Key=s3_key)
+        response = _s3_client.get_object(Bucket=bucket_name, Key=s3_key)
         
         # Read Parquet content
         parquet_data = response['Body'].read()

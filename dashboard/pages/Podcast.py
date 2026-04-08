@@ -1,10 +1,6 @@
 import streamlit as st
-import sys
-from pathlib import Path
 
-# Adiciona o diretório pai ao path para poder importar os módulos personalizados
-sys.path.append(str(Path(__file__).parent.parent))
-from utils.dashboard_base import BaseDashboard
+from dashboard.utils.dashboard_base import BaseDashboard
 
 st.set_page_config(
     page_title="Podcast YouTube Dashboard",
