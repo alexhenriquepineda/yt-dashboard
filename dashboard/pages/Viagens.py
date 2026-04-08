@@ -1,6 +1,6 @@
 import streamlit as st
 
-from dashboard.utils.dashboard_base import BaseDashboard
+from utils.dashboard_base import BaseDashboard
 
 st.set_page_config(
     page_title="Viagens YouTube Dashboard",

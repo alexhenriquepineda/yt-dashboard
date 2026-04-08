@@ -1,19 +1,19 @@
 import boto3
 import streamlit as st
 import pandas as pd
-from dashboard.utils.dashboard_code.overview import show_overview
-from dashboard.utils.dashboard_code.suggestions import suggest_channel
-from dashboard.utils.dashboard_code.load_data import read_parquet_from_s3
-from dashboard.utils.dashboard_code.curiosity import display_additional_info
-from dashboard.utils.dashboard_code.channel_analysis import show_channel_analysis
-from dashboard.utils.dashboard_code.video_duration import display_statiscal_analysis
-from dashboard.utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
-from dashboard.utils.dashboard_code.title_performance import analyze_title_performance
-from dashboard.utils.dashboard_code.weekday_correlation import analyze_weekday_correlation
-from dashboard.utils.dashboard_code.comparative_analysis import analyze_comparative_performance
-from dashboard.utils.dashboard_code.niche_landscape import show_niche_landscape
-from dashboard.utils.dashboard_code.channel_forecast import show_channel_forecast
-from config.channel_id import get_channel_ids_by_niche
+from utils.dashboard_code.overview import show_overview
+from utils.dashboard_code.suggestions import suggest_channel
+from utils.dashboard_code.load_data import read_parquet_from_s3
+from utils.dashboard_code.curiosity import display_additional_info
+from utils.dashboard_code.channel_analysis import show_channel_analysis
+from utils.dashboard_code.video_duration import display_statiscal_analysis
+from utils.dashboard_code.seasonality_analysis import analyze_sazonalidade
+from utils.dashboard_code.title_performance import analyze_title_performance
+from utils.dashboard_code.weekday_correlation import analyze_weekday_correlation
+from utils.dashboard_code.comparative_analysis import analyze_comparative_performance
+from utils.dashboard_code.niche_landscape import show_niche_landscape
+from utils.dashboard_code.channel_forecast import show_channel_forecast
+from utils.dashboard_code.channel_id import get_channel_ids_by_niche
 
 
 class BaseDashboard:
